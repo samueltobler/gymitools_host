@@ -6,6 +6,9 @@
   <title>Gymi-Tools</title>
   <meta name="description" content="Sammlung moderner Unterrichtstools." />
 
+  <!-- Font Awesome für Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
   <style>
     :root{
       --bg1:#f6f8ff;
@@ -92,10 +95,11 @@
       display:flex;
       align-items:flex-end;
       gap: 10px;
-      min-width: 260px;
+      min-width: 0;
       flex: 1;
       justify-content:flex-end;
       flex-wrap: wrap;
+      max-width: 760px;
     }
 
     /* Tabs */
@@ -103,6 +107,8 @@
       display:flex;
       gap: 8px;
       align-items:center;
+      max-width: 100%;
+      overflow-x: auto;
       padding: 6px;
       border-radius: 999px;
       border: 1px solid var(--border);
@@ -110,6 +116,11 @@
       box-shadow: var(--shadow2);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      scrollbar-width: none;
+    }
+
+    .tabs::-webkit-scrollbar{
+      display:none;
     }
 
     .tab{
@@ -142,14 +153,70 @@
       box-shadow: 0 0 0 4px var(--focus);
     }
 
+    .controlrow{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .viewcontrols{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .viewtoggle{
+      flex: 0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      min-width: 48px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.75);
+      color: var(--text);
+      box-shadow: var(--shadow2);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      cursor:pointer;
+      font: inherit;
+      font-size: 14px;
+      white-space:nowrap;
+    }
+
+    .viewtoggle i{
+      width: 16px;
+      text-align:center;
+      font-size: 15px;
+    }
+
+    .viewtoggle:hover{
+      border-color: rgba(15,23,42,.22);
+    }
+
+    .viewtoggle:focus{
+      outline:none;
+      border-color: rgba(59,130,246,.35);
+      box-shadow: 0 0 0 4px var(--focus), var(--shadow2);
+    }
+
     .search{
       position:relative;
-      width: min(460px, 100%);
+      width: min(240px, 100%);
+      flex: 0 1 240px;
+      min-width: 120px;
     }
 
     .search input{
       width:100%;
-      padding: 12px 14px 12px 42px;
+      padding: 12px 14px;
       border-radius: 999px;
       border: 1px solid var(--border);
       background: rgba(255,255,255,.75);
@@ -197,6 +264,37 @@
       transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
       position:relative;
       cursor: pointer;
+    }
+
+    .grid.list-view .card{
+      grid-column: 1 / -1;
+      display:flex;
+      align-items:stretch;
+      min-height: 118px;
+    }
+
+    .grid.list-view .thumbwrap{
+      width: 150px;
+      min-width: 150px;
+      aspect-ratio: auto;
+    }
+
+    .grid.list-view .thumbimg{
+      width: 82%;
+      height: 82%;
+    }
+
+    .grid.list-view .content{
+      flex: 1;
+      justify-content:center;
+    }
+
+    .grid.list-view .ctitle{
+      font-size: 15px;
+    }
+
+    .grid.list-view .desc{
+      max-width: 80ch;
     }
 
     .card:focus-within{
@@ -305,14 +403,38 @@
 
     @media (max-width: 980px){
       .card{ grid-column: span 6; }
-      .topbar{ justify-content:flex-start; }
+
+      .brand{
+        flex: 0 0 100%;
+      }
+
+      .topbar{
+        flex: 0 0 100%;
+        width: 100%;
+        max-width: 100%;
+        justify-content:flex-start;
+        align-items:center;
+        margin-top: 4px;
+      }
+
+      .tabs{
+        max-width: 100%;
+      }
     }
 
     @media (max-width: 620px){
       .wrap{ padding-bottom: 44px; }
+      .topbar{ align-items:stretch; }
       .card{ grid-column: span 12; }
-      .tabs{ width: 100%; justify-content: space-between; }
-      .search{ width: 100%; }
+      .tabs{ width: 100%; border-radius: 18px; justify-content:flex-start; }
+      .tab{ padding: 9px 10px; }
+      .controlrow{ width: 100%; flex: 1 1 100%; }
+      .search{ width: auto; flex: 1 1 auto; min-width: 0; }
+      .viewcontrols{ width: auto; justify-content:flex-end; }
+      .grid.list-view .card{ min-height: 96px; }
+      .grid.list-view .thumbwrap{ width: 104px; min-width: 104px; }
+      .grid.list-view .row{ align-items:flex-start; }
+      .grid.list-view .chip{ display:none; }
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -325,6 +447,57 @@
     a.card *{
       cursor: pointer !important;
     }
+    /* Footer (neu) */
+    .footer{
+
+      padding: 18px 0 0;
+    }
+
+    .pubbtn{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.12);
+      background: rgba(15,23,42,.92);
+      color: #fff;
+      box-shadow: var(--shadow2);
+    }
+    .pubbtn:hover{ background: rgba(15,23,42,.98); }
+
+    .footerlinks{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      flex-wrap:wrap;
+      margin-top: px;
+      color: #89949f;
+      font-size: 18px;
+    }
+
+    .footerlinks a{
+      color: #89949f;
+      display:inline-flex;
+      align-items:center;
+    }
+    .footerlinks a:hover{ color: rgba(15,23,42,.70); }
+
+    .footnote{
+      margin-top: px;
+      color: #89949f;
+      font-size: 12px;
+    }
+
+    .footnote a{
+      color: #89949f;
+      text-decoration:none;
+      border-bottom: 1px solid rgba(137,148,159,.45);
+    }
+    .footnote a:hover{
+      border-bottom-color: rgba(137,148,159,.75);
+    }
+
   </style>
 </head>
 
@@ -350,18 +523,31 @@
   <button class="tab" type="button" role="tab" aria-selected="false" data-kat="spiel">Spiele</button>
 </div>
 
-        <div class="search" aria-label="Tools durchsuchen">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
-            <path d="M16.3 16.3 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <input id="q" type="search" placeholder="Suchen nach Kategorien; z.B. Biologie, Tool, Statistik, Spiele" autocomplete="off" />
+        <div class="controlrow" aria-label="Suche, Ansicht und Reihenfolge">
+          <div class="search" aria-label="Tools durchsuchen">
+             <input id="q" type="search" placeholder="Suchen..." autocomplete="off" />
+          </div>
+
+          <div class="viewcontrols" aria-label="Ansicht und Reihenfolge">
+            <button class="viewtoggle" id="viewToggle" type="button" aria-pressed="false" aria-label="Zur Listenansicht wechseln" title="Listenansicht">
+              <i class="fas fa-list" aria-hidden="true"></i>
+              <span></span>
+            </button>
+
+            <button class="viewtoggle" id="sortToggle" type="button" aria-pressed="false" aria-label="Alphabetisch sortieren" title="Alphabetisch sortieren">
+              <i class="fas fa-sort-alpha-down" aria-hidden="true"></i>
+              <span></span>
+            </button>
+          </div>
         </div>
       </div>
     </header>
 
     <main>
       <section class="grid" id="grid" aria-live="polite"></section>
+
+      <!-- Footer (eingefügt) -->
+      
     </main>
   </div>
 
@@ -369,12 +555,16 @@
     const q = document.getElementById('q');
     const grid = document.getElementById('grid');
     const tabs = Array.from(document.querySelectorAll('.tab'));
+    const viewToggle = document.getElementById('viewToggle');
+    const sortToggle = document.getElementById('sortToggle');
 
     const CSV_URL  = "https://raw.githubusercontent.com/samueltobler/gymitools_host/main/data.csv";
     const IMG_BASE = "https://raw.githubusercontent.com/samueltobler/gymitools_host/main/img/";
     const BG_FILES = ["bg1.png", "bg2.png", "bg3.png", "bg4.png", "bg5.png", "bg6.png", "bg7.png", "bg8.png"];
 
     let activeKat = "__all";
+    let allRows = [];
+    let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'alpha' ? 'alpha' : 'random';
 
     const TOOL_KATS = new Set(['tool', 'tools']);
     
@@ -456,6 +646,42 @@
       `;
       return a;
     }
+
+    function sortRows(rows, mode){
+      const sortedRows = [...rows];
+
+      if(mode === 'alpha'){
+        return sortedRows.sort((a, b) =>
+          a.titel.localeCompare(b.titel, 'de-CH', { sensitivity: 'base' })
+        );
+      }
+
+      return shuffleInPlace(sortedRows);
+    }
+
+    function renderRows(rows){
+      grid.innerHTML = '';
+      for(const row of rows){
+        grid.appendChild(makeCard(row));
+      }
+      applyFilter();
+    }
+
+    function setSortMode(mode){
+      activeSortMode = mode === 'alpha' ? 'alpha' : 'random';
+
+      sortToggle.innerHTML = activeSortMode === 'alpha'
+        ? '<i class="fas fa-random" aria-hidden="true"></i>'
+        : '<i class="fas fa-sort-alpha-down" aria-hidden="true"></i>';
+      sortToggle.setAttribute('aria-pressed', String(activeSortMode === 'alpha'));
+      sortToggle.setAttribute('aria-label', activeSortMode === 'alpha' ? 'Zufällig sortieren' : 'Alphabetisch sortieren');
+      sortToggle.setAttribute('title', activeSortMode === 'alpha' ? 'Zufällig sortieren' : 'Alphabetisch sortieren');
+      localStorage.setItem('gymiToolsSortMode', activeSortMode);
+
+      if(allRows.length){
+        renderRows(sortRows(allRows, activeSortMode));
+      }
+    }
     
 
     function setActiveTab(kat){
@@ -492,20 +718,25 @@
   }
 }
 
+    function setViewMode(mode){
+      const isList = mode === 'list';
+      grid.classList.toggle('list-view', isList);
+      viewToggle.innerHTML = isList
+        ? '<i class="fas fa-th-large" aria-hidden="true"></i>'
+        : '<i class="fas fa-list" aria-hidden="true"></i>';
+      viewToggle.setAttribute('aria-pressed', String(isList));
+      viewToggle.setAttribute('aria-label', isList ? 'Zur Kartenansicht wechseln' : 'Zur Listenansicht wechseln');
+      viewToggle.setAttribute('title', isList ? 'Kartenansicht' : 'Listenansicht');
+      localStorage.setItem('gymiToolsViewMode', isList ? 'list' : 'grid');
+    }
+
     async function init(){
       try{
         const res = await fetch(CSV_URL, { cache: 'no-store' });
         if(!res.ok) throw new Error(`data.csv nicht gefunden (${res.status})`);
         const text = await res.text();
-        const rows = parseSemicolonCSV(text);
-
-        shuffleInPlace(rows);
-
-        grid.innerHTML = '';
-        for(const row of rows){
-          grid.appendChild(makeCard(row));
-        }
-        applyFilter();
+        allRows = parseSemicolonCSV(text);
+        setSortMode(activeSortMode);
       }catch(err){
         grid.innerHTML = `
           <div style="grid-column:1/-1;padding:16px;border:1px solid rgba(15,23,42,.10);border-radius:18px;background:rgba(255,255,255,.75);box-shadow:0 10px 30px rgba(2,6,23,.08);color:#0f172a">
@@ -516,6 +747,17 @@
         console.error(err);
       }
     }
+
+    viewToggle.addEventListener('click', () => {
+      setViewMode(grid.classList.contains('list-view') ? 'grid' : 'list');
+    });
+
+    sortToggle.addEventListener('click', () => {
+      setSortMode(activeSortMode === 'alpha' ? 'random' : 'alpha');
+    });
+
+    setViewMode(localStorage.getItem('gymiToolsViewMode') === 'list' ? 'list' : 'grid');
+    setSortMode(activeSortMode);
 
     q.addEventListener('input', applyFilter);
 
