@@ -564,8 +564,7 @@
 
     let activeKat = "__all";
     let allRows = [];
-    let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'alpha' ? 'alpha' : 'random';
-
+let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'random' : 'alpha';
     const TOOL_KATS = new Set(['tool', 'tools']);
     
     function norm(s){ return (s || '').toLowerCase().trim(); }
@@ -756,7 +755,7 @@
       setSortMode(activeSortMode === 'alpha' ? 'random' : 'alpha');
     });
 
-    setViewMode(localStorage.getItem('gymiToolsViewMode') === 'list' ? 'list' : 'grid');
+    setViewMode(localStorage.getItem('gymiToolsViewMode') === 'grid' ? 'grid' : 'list');
     setSortMode(activeSortMode);
 
     q.addEventListener('input', applyFilter);
