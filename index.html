@@ -171,14 +171,14 @@
     }
 
     .viewtoggle{
-      flex: 0 0 auto;
+      flex: 0 0 48px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap: 8px;
-      min-width: 48px;
-      padding: 12px 14px;
-      border-radius: 999px;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border-radius: 50%;
       border: 1px solid var(--border);
       background: rgba(255,255,255,.75);
       color: var(--text);
@@ -447,55 +447,62 @@
     a.card *{
       cursor: pointer !important;
     }
-    /* Footer (neu) */
-    .footer{
 
-      padding: 18px 0 0;
-    }
-
-    .pubbtn{
-      display:inline-flex;
-      align-items:center;
-      gap: 10px;
-      padding: 12px 20px;
-      border-radius: 999px;
-      border: 1px solid rgba(15,23,42,.12);
-      background: rgba(15,23,42,.92);
-      color: #fff;
-      box-shadow: var(--shadow2);
-    }
-    .pubbtn:hover{ background: rgba(15,23,42,.98); }
-
-    .footerlinks{
+    .pagination{
       display:flex;
       align-items:center;
-      gap: 14px;
-      flex-wrap:wrap;
-      margin-top: px;
-      color: #89949f;
-      font-size: 18px;
+      justify-content:center;
+      gap: 10px;
+      margin-top: -72px;
+      padding-bottom: 72px;
     }
 
-    .footerlinks a{
-      color: #89949f;
+    .pagebtn{
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.75);
+      color: var(--text);
+      box-shadow: var(--shadow2);
+      cursor:pointer;
+      font: inherit;
+      font-size: 13px;
       display:inline-flex;
       align-items:center;
-    }
-    .footerlinks a:hover{ color: rgba(15,23,42,.70); }
-
-    .footnote{
-      margin-top: px;
-      color: #89949f;
-      font-size: 12px;
+      justify-content:center;
     }
 
-    .footnote a{
-      color: #89949f;
+    .pagebtn:hover{
+      border-color: rgba(15,23,42,.22);
+    }
+
+    .pagebtn[aria-current="page"]{
+      background: rgba(59,130,246,.12);
+      border-color: rgba(59,130,246,.25);
+      cursor: default;
+    }
+
+    .pagebtn:disabled{
+      cursor:not-allowed;
+      opacity:.45;
+    }
+    .footer{
+      margin-top:32px;
+      margin-bottom:32px;
+      text-align:center;
+      font-size:11px;
+      color:rgba(0,0,0,0.5);
+    }
+
+    .footer a{
+      color:rgba(0,0,0,0.5);
       text-decoration:none;
-      border-bottom: 1px solid rgba(137,148,159,.45);
     }
-    .footnote a:hover{
-      border-bottom-color: rgba(137,148,159,.75);
+
+    .footer a:hover{
+      text-decoration:underline;
     }
 
   </style>
@@ -545,15 +552,20 @@
 
     <main>
       <section class="grid" id="grid" aria-live="polite"></section>
+      <nav class="pagination" id="pagination" aria-label="Seitennavigation"></nav>
 
-      <!-- Footer (eingefügt) -->
-      
+      <div class="footer">
+        © 2026 <a href="https://samueltobler.github.io" target="_blank" rel="noopener noreferrer">Samuel Tobler, 2026</a> |
+        <a href="mailto:gymitools@gmail.com" target="_blank">Kontakt</a>
+      </div>
+
     </main>
   </div>
 
   <script>
     const q = document.getElementById('q');
     const grid = document.getElementById('grid');
+    const pagination = document.getElementById('pagination');
     const tabs = Array.from(document.querySelectorAll('.tab'));
     const viewToggle = document.getElementById('viewToggle');
     const sortToggle = document.getElementById('sortToggle');
@@ -562,8 +574,11 @@
     const IMG_BASE = "https://raw.githubusercontent.com/samueltobler/gymitools_host/main/img/";
     const BG_FILES = ["bg1.png", "bg2.png", "bg3.png", "bg4.png", "bg5.png", "bg6.png", "bg7.png", "bg8.png"];
 
+    const PAGE_SIZE = 10;
     let activeKat = "__all";
     let allRows = [];
+    let currentRows = [];
+    let currentPage = 1;
 let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'random' : 'alpha';
     const TOOL_KATS = new Set(['tool', 'tools']);
     
@@ -659,11 +674,22 @@ let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'r
     }
 
     function renderRows(rows){
-      grid.innerHTML = '';
-      for(const row of rows){
-        grid.appendChild(makeCard(row));
-      }
+      currentRows = [...rows];
+      currentPage = 1;
       applyFilter();
+    }
+
+    function renderPagination(totalItems, totalPages){
+      if(totalItems <= PAGE_SIZE){
+        pagination.innerHTML = '';
+        return;
+      }
+
+      pagination.innerHTML = Array.from({ length: totalPages }, (_, i) => {
+        const page = i + 1;
+        const current = page === currentPage ? 'aria-current="page"' : '';
+        return `<button class="pagebtn" type="button" data-page="${page}" ${current}>${page}</button>`;
+      }).join('');
     }
 
     function setSortMode(mode){
@@ -685,6 +711,7 @@ let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'r
 
     function setActiveTab(kat){
       activeKat = kat;
+      currentPage = 1;
       for(const btn of tabs){
         const isActive = btn.dataset.kat === kat;
         btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
@@ -694,10 +721,9 @@ let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'r
 
     function applyFilter(){
   const term = norm(q.value);
-  const cards = Array.from(grid.querySelectorAll('.card'));
 
-  for(const card of cards){
-    const cardKat = norm(card.dataset.kategorie);
+  const filteredRows = currentRows.filter(row => {
+    const cardKat = norm(row.kategorie || 'Tool');
 
     const matchesTab =
       (activeKat === "__all") ||
@@ -705,16 +731,27 @@ let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'r
       (activeKat !== "__tools" && activeKat !== "__all" && cardKat === activeKat);
 
     const hay = norm(
-      card.dataset.title + ' ' +
-      card.dataset.desc + ' ' +
-      (card.dataset.kategorie || '') + ' ' +
-      card.innerText
+      row.titel + ' ' +
+      row.beschreibung + ' ' +
+      (row.kategorie || '')
     );
 
     const matchesSearch = (!term || hay.includes(term));
+    return matchesTab && matchesSearch;
+  });
 
-    card.style.display = (matchesTab && matchesSearch) ? '' : 'none';
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  if(currentPage > totalPages) currentPage = totalPages;
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageRows = filteredRows.slice(start, start + PAGE_SIZE);
+
+  grid.innerHTML = '';
+  for(const row of pageRows){
+    grid.appendChild(makeCard(row));
   }
+
+  renderPagination(filteredRows.length, totalPages);
 }
 
     function setViewMode(mode){
@@ -755,10 +792,22 @@ let activeSortMode = localStorage.getItem('gymiToolsSortMode') === 'random' ? 'r
       setSortMode(activeSortMode === 'alpha' ? 'random' : 'alpha');
     });
 
+    pagination.addEventListener('click', e => {
+      const btn = e.target.closest('button[data-page]');
+      if(!btn) return;
+
+      currentPage = Number(btn.dataset.page);
+      applyFilter();
+      window.scrollTo({ top: grid.offsetTop - 20, behavior: 'smooth' });
+    });
+
     setViewMode(localStorage.getItem('gymiToolsViewMode') === 'grid' ? 'grid' : 'list');
     setSortMode(activeSortMode);
 
-    q.addEventListener('input', applyFilter);
+    q.addEventListener('input', () => {
+      currentPage = 1;
+      applyFilter();
+    });
 
     for(const btn of tabs){
       btn.addEventListener('click', () => setActiveTab(btn.dataset.kat));
